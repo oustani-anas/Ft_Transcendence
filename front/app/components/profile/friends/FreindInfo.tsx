@@ -11,14 +11,11 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
-import { selectFreindInfo } from '../../../../redux/features/freinds/requestSlice';
 import axios from 'axios';
-import { Select } from '@nextui-org/react';
 import { selectProfileInfo } from '@/redux/features/profile/profileSlice';
 import Lottie from 'react-lottie-player';
 import animationData from   "../../../../public/nothing.json"
 import { RootState } from "@/redux/store/store";
-// import Lottie from 'react-lottie';
 
 export default function FreindInfo({userId}: {userId: string}) {
   const profileInfo = useSelector(selectProfileInfo);
@@ -26,16 +23,17 @@ export default function FreindInfo({userId}: {userId: string}) {
   const [refreshStatus, setRefreshStatus] = useState(true);
   const socket = useSelector((state: RootState) => state.socket.socket);
 
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+
   useEffect(() => {
 
     const listFriends = async () => {
       try {
         
-        const response = await axios.get(`http://localhost:4000/user/userFreinds?userId=${userId}`, { withCredentials: true });
+        const response = await axios.get(`${url}/user/userFreinds?userId=${userId}`, { withCredentials: true });
         
         setMyFreinds(response.data);
       } catch (error:any) {
-        console.log("Error fetching user data:", error.response.data.message);
       }
 
     };

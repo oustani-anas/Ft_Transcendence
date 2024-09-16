@@ -6,7 +6,6 @@ import * as express from 'express';
 import { join } from 'path';
 import { ValidationPipe } from '@nestjs/common';
 
-
 async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
@@ -18,7 +17,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:3000/'],
+    origin: [`${process.env.CLIENT_URL}`, `${process.env.CLIENT_URL}/`],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });

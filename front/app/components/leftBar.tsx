@@ -1,15 +1,11 @@
 "use client";
-import {
-  selectProfileInfo,
-  setProfileData,
-} from "@/redux/features/profile/profileSlice";
 import { profilePersistor } from "@/redux/store/store";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store/store";
 
 export default function LeftBar() {
@@ -22,8 +18,9 @@ export default function LeftBar() {
   const router = useRouter();
 
   const logout = async () => {
+    const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
     try {
-      await axios.get("http://localhost:4000/auth/logout", {withCredentials: true});
+      await axios.get(`${url}/auth/logout`, {withCredentials: true});
       socket.emit("customDisco")
       router.push("/");
       await profilePersistor.purge();
@@ -34,7 +31,6 @@ export default function LeftBar() {
 
   return (
 
-    //fix size of the bar
     <div
       className={`fixed z-[1000] h-screen sidebar  flex flex-col justify-between items-center transition-all duration-300 ${
         isSidebarOpen ? "w-full backdrop-blur-[4px]" : "-translate-x-full"
@@ -63,7 +59,6 @@ export default function LeftBar() {
             <div className="w-[50px] h-[50px] overflow-hidden relative rounded-full flex items-center justify-center ">
               <Image
                 src="../../../images/Profile.svg"
-                // <img className='object-cover h-[50px] min-w-[50px] max-w-[50px]  ' src={`${message?.sender?.avatar}`} alt="" />
                 alt="logo"
                 width={35}
                 height={35}
@@ -122,7 +117,6 @@ export default function LeftBar() {
         </div>
       </div>
       <button
-        // md:hidden pt-12 absolute left-[20px]
         className={
           isSidebarOpen
             ? `lg:hidden p-3 absolute left-[20px]`

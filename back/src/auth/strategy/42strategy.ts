@@ -11,11 +11,18 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     constructor(private readonly prisma: PrismaService,
         private readonly service: AuthService) {
         super({
-            clientID: 'u-s4t2ud-1bdfb4911333ace17c174b3425984b08828423d2d510b3ba59ede898792699ae', // matnssach t7etha f ".env" !!!!!
-            clientSecret: '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', // matnssach t7etha f ".env" !!!!!
-            callbackURL: 'http://localhost:4000/auth/redirect',
+            clientID: process.env.CLIENT_ID, // matnssach t7etha f ".env" !!!!!
+            clientSecret: process.env.CLIENT_SECRET, // matnssach t7etha f ".env" !!!!!
+            callbackURL: process.env.CALLBACK_URL,
         });
     }
+
+    async authenticate(request: any, options?: any): Promise<any> {
+        if (request.query && request.query.error === 'access_denied') {
+          return request.res.redirect('http://localhost:3000');
+        }
+        return super.authenticate(request, options);
+      }
 
     async validate(accessToken: string, refreshToken: string, profile: any) {
         try {
@@ -34,25 +41,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
             }
             return user;
         } catch (error) {
-            // Handle the error gracefully
-            console.error('Error in FortyTwo authentication:', error);
+            // console.error('Error in FortyTwo authentication:', error);
             throw new UnauthorizedException('Failed to authenticate with FortyTwo');
         }
     }
 }
-// _json: {
-//     id: 93960,
-//     email: 'sharrach@student.1337.ma',
-//     login: 'sharrach',
-//     first_name: 'Salah-eddine',
-//     last_name: 'Harrachmin',
-//     usual_full_name: 'Salah Eddine Harrachmin',
-//     usual_first_name: null,
-//     url: 'https://api.intra.42.fr/v2/users/sharrach',
-//     phone: 'hidden',
-//     displayname: 'Salah Eddine Harrachmin',
-//     kind: 'student',
-//     image: {
-//       link: 'https://cdn.intra.42.fr/users/9fe37480f3ad41e2b285e990de9efb4f/sharrach.jpg',
-//       versions: [Object]
-//     },

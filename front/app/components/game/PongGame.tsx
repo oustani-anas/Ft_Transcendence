@@ -25,7 +25,6 @@ const PongGame = () => {
   const [pic1,setPic1] = useState<string>("");
   const userData = useSelector(selectProfileInfo);
   
-  //select canvas
   const canv = canvasRef.current;
   const [ball, setBall] = useState<Ball>();
   const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -34,7 +33,7 @@ const PongGame = () => {
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth < 910 || window.innerHeight < 450);
     };
-    handleResize(); // Check initially
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -51,8 +50,6 @@ const PongGame = () => {
     }
   },[playAgain])
 
-
-  //ball interface
   interface Ball{
     x:number;
     y:number;
@@ -236,9 +233,7 @@ const PongGame = () => {
   const render = () => {
     drawRect();
     drawNet()
-    //draw the ball
     drawCircle()
-    //draw the player
     drawFirstPlayer()
     drawSecondPlayer()
   } 
@@ -290,13 +285,10 @@ const PongGame = () => {
     setPlayAgain(false);
     if (ball && canvas)
     {
-      // ball movement
       ball.x += ball.velocityX * ball.speed;
       ball.y += ball.velocityY * ball.speed;
-      // ball collision with Top & Bottom borders
       if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0)
         ball.velocityY = -ball.velocityY;
-      // ball collision with players
       if (collision())
       {
 
@@ -304,8 +296,6 @@ const PongGame = () => {
           ball.velocityX = Math.abs(ball.velocityX);
         else
           ball.velocityX = -1 * Math.abs(ball.velocityX);
-        //increse speed
-        // ball.speed += 0.1;
       }
       ComputerMovement()
       if (ball.x - ball.radius <  0)

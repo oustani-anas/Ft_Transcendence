@@ -34,7 +34,6 @@ export default function FriendsAndGroups(props: any) {
             </div>
           )}
         </div>
-        {/* <div className='pt-2 flex justify-center items-center'> <input className='searchBar w-[88%] h-[45px] pl-5 rounded-2xl bg-gray-200 ' type="text" placeholder="Search in chat" /> </div> */}
         <div className='mt-[25px] w-[100%] flex flex-col items-center'>
           <Convos />
         </div>

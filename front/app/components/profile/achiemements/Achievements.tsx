@@ -1,53 +1,28 @@
 import React, { useEffect, useState } from 'react'
-import Image from 'next/image'
 import Achievement from './Achievement'
-import { useSelector } from 'react-redux'
-import { selectAchievement } from '../../../../redux/features/achievement/achievementSlice'
 import axios from 'axios'
-import { selectProfileInfo } from '@/redux/features/profile/profileSlice'
 
 
 
 export default function Achievements({userId}: {userId: any}) {
 
 
-    // const getId = useSelector(selectProfileInfo);
     const [achievement, setAchievement] = useState<any>([]);
 
-//   useEffect(() => { const achievement = async () => {
-      
-//     try{
-//         console.log("hereeee--------------------");
-        
-//         const achievement = await axios.get(`http://localhost:4000/user/achievements?userId=${myData.id}`, {withCredentials: true})
-//     }
-//     catch(e){
-//         console.log(e)
-//     }
-// };
-// achievement();
-// }, [])
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+
     useEffect(() => { const achievement = async () => {
       try{
-        const getachivem = await axios.get(`http://localhost:4000/user/achievements?userId=${userId}`, {withCredentials: true})
-          const achievement = await axios.get(`http://localhost:4000/user/getAllAchievements?userId=${userId}`, {withCredentials: true})
+        const getachivem = await axios.get(`${url}/user/achievements?userId=${userId}`, {withCredentials: true})
+          const achievement = await axios.get(`${url}/user/getAllAchievements?userId=${userId}`, {withCredentials: true})
 
-          console.log("achievement", achievement.data);
           setAchievement(achievement.data);
-          console.log("achievement", achievement);
       }
       catch(e){
-          console.log(e)
       }
   };
   achievement();
   }, [])
-  console.log("achievement", achievement.achiev1);
-  console.log("achievement", achievement.achiev2);
-  console.log("achievement", achievement.achiev3);
-  console.log("achievement", achievement.achiev4);
-  console.log("achievement", achievement.achiev5);  
-  console.log("achievement", achievement.achiev6);  
   
 
   const achievementData = [
@@ -100,7 +75,6 @@ export default function Achievements({userId}: {userId: any}) {
       imagePath: "/Sunny-GoSmashChampion.jpeg"
     }
   ]
-    // const array = useSelector(selectAchievement);
     return (
         <>
             <div className="achievement xl:h-full xl:grid flex flex-col gap-2 p-4 bg-white overflow-hidden rounded-xl" style={{gridTemplateRows: "0.2fr 2fr 2fr 2fr"}}>

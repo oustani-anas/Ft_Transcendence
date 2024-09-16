@@ -1,8 +1,7 @@
 'use client'
 import axios from 'axios';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { use, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
 
 axios.defaults.withCredentials = true;
@@ -14,12 +13,10 @@ export default function Verify2FauClient() {
 
     const Verify2fa = async () => {
         axios.post('http://localhost:4000/auth/verifyTwoFactorAuthCode', {code}, { withCredentials: true }).then((response) => {
-            console.log('response: from the profile ', response);
             toast.success('wait for redirection to the profile page');
             route.push('http://localhost:3000/Profile');
         }).catch((error) => {
             toast.error('code incorrect');
-            console.log('code incorrect');
         });
     };
     return (
@@ -41,11 +38,9 @@ export default function Verify2FauClient() {
                     </div>
                 </div>
                 <div className='w-[300px] text-center self-end px-[20px]'>
-                    {/* <Link href={"http://localhost:4000/auth/redirect"}> */}
                         <button className='w-full text-white h-10 rounded-lg bg-[#909DC8]'
                             onClick={Verify2fa}
                         >Complete 2-step verification </button>
-                    {/* </Link> */}
                 </div>
             </div>
         </div>

@@ -1,8 +1,19 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaClient, User } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
+
+  constructor(config: ConfigService) {
+    super({
+      datasources: {
+        db: {
+          url: config.get('DB_URL'),
+        },
+      },
+    });
+  }
 
   async onModuleInit() {
     await this.$connect();
@@ -21,7 +32,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   }
 
   async getUserByUserId(user:string){
-    console.log("user", user);
     
     const users = await this.user.findUnique({
       where: {id: user},

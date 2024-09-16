@@ -4,7 +4,6 @@ import { PrismaService } from 'src/prisma.service';
 import Fuse from 'fuse.js';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UserService } from './user.service';
-import { ChatController } from 'src/chat/chat.controller';
 import { ChatService } from 'src/chat/chat.service';
 import { UserDto } from './user.dto';
 
@@ -46,7 +45,7 @@ export class UserController {
                 where: { id: userDto.id },
                 data: { username: userDto.username, firstName: userDto.firstName, lastName: userDto.lastName, avatar: userDto.avatar }
             });
-            this.eventEmitter.emit("refreshAll");
+            // this.eventEmitter.emit("refreshAll");
 
             return await res.send({ info: true, message: "Username updated successfully" });
         }
@@ -114,28 +113,6 @@ export class UserController {
         this.eventEmitter.emit("refreshNotifications");
         this.eventEmitter.emit("refreshfriendShip");
     }
-
-
-
-    // @Post('PlayAgainRequest')
-    // @UseGuards(AuthGuard('jwt'))
-    // async sendFriendRequest(@Body() req: any) {
-    //     const user = await this.UserService.getUser(req.target);
-
-
-    //     if (!user) return;
-    //     const isRequestExist = await this.UserService.isRequestExist(req.target, req.sender);
-    //     if (isRequestExist && isRequestExist.status === "Declined") {
-
-    //         await this.UserService.pendFriendRequest(isRequestExist.id, req.sender, req.target);
-    //     }
-    //     else {
-
-    //         await this.UserService.createFriendRequest(req.target, req.sender);
-    //     }
-    //     this.eventEmitter.emit("refreshNotifications");
-    //     this.eventEmitter.emit("refreshfriendShip");
-    // }
 
     @Post('acceptFriendRequest')
     @UseGuards(AuthGuard('jwt'))
@@ -329,8 +306,6 @@ export class UserController {
     @UseGuards(AuthGuard('jwt'))
     async getAllAchievements(@Query("userId") userId: string) {
         const allAchievements = await this.UserService.getAllAchievements(userId);
-        // console.log("all achievemt==============", allAchievements);
-        
         return allAchievements;
     }
 }

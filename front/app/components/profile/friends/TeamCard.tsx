@@ -1,14 +1,12 @@
-// MyComponent.js
+
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image"; // Make sure to import your image component/library
-import { selectFreindInfo, selectFreindRequestInfo }
-from "../../../../redux/features/freinds/requestSlice";
+import Image from "next/image";
 import { useSelector } from "react-redux";
 import Link from "next/link";
 import axios from "axios";
 import { selectProfileInfo } from "@/redux/features/profile/profileSlice";
-import { io, Socket } from '@/../../node_modules/socket.io-client/build/esm/index';
+import { io } from '@/../../node_modules/socket.io-client/build/esm/index';
 
 const TeamCard = ({
   name,
@@ -24,20 +22,15 @@ const TeamCard = ({
   status: string;
 }) => {
   
-
-  // myId = myData.id;      target = userId
-
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
   const Play = async (tar:string):Promise<void> => 
   {
-    console.log("invite to play");
-
     await axios.post(
-      `http://localhost:4000/user/sendPlayAgain`,
-      { sender: myData.id, target:tar}, // to handel
+      `${url}/user/sendPlayAgain`,
+      { sender: myData.id, target:tar},
       { withCredentials: true });
-      console.log("connected5")
-
-        const socket = io('http://localhost:4000', {
+      
+        const socket = io(`${url}`, {
           path: '/play',
           query: {
             token: "token_data",
@@ -58,13 +51,13 @@ const TeamCard = ({
     const fetchData = async () => {
       try {
         setIsMYId(myData.id === userId);
-        const response = await axios.get(`http://localhost:4000/Chat/getDm?myId=${myData.id}&othersId=${userId}`, { withCredentials: true });
+        const response = await axios.get(`${url}/Chat/getDm?myId=${myData.id}&othersId=${userId}`, { withCredentials: true });
 
         setGroupId(response.data);
 
         if (myData.id !== userId) {
 
-          const areFriends = await axios.get(`http://localhost:4000/user/checkIfFriend?myId=${myData.id}&&receiverId=${userId}`, { withCredentials: true });
+          const areFriends = await axios.get(`${url}/user/checkIfFriend?myId=${myData.id}&&receiverId=${userId}`, { withCredentials: true });
           setIsFriend(areFriends.data);
         }
 
@@ -103,7 +96,7 @@ const TeamCard = ({
       </div>
       {!isMyId && isFriend ? (
         <div className="w-full flex justify-center items-center gap-[16px] ">
-           <Link href="../Play" onClick={() => Play(userId)}
+           <Link href={`/Play/${userId}`} onClick={() => Play(userId)}
            className="rounded-[10px] cursor-pointer w-[60%] bg-[#d3dafb] h-[40px] flex  items-center justify-center hover:bg-[#c3cdfb] ">
           <button className=" rounded-[10px] cursor-pointer w-[60%] bg-[#d3dafb] h-[40px] flex flex-row-reverse items-center justify-center gap-[8px] hover:bg-[#c3cdfb]">
             <div className="">
@@ -164,48 +157,3 @@ const TeamCard = ({
 };
 
 export default TeamCard;
-
-{
-  /* <div className="w-[80px] h-[80px] rounded-[50%]">
-  <Link href={`./../../Profile/${userId}`}>
-    <div>
-      <div className="relative bg-white">
-        <label
-          htmlFor="status"
-          className="z-50 absolute px-3"
-        >
-          <img
-            id="userStatus"
-            src="/green.png"
-            alt="status"
-            className="w-[5px] h-[5px] object-cover rounded-[50%]"
-          />
-        </label>
-      </div>
-      <Image
-        src={image}
-        alt={name}
-        width={80}
-        height={80}
-        className="rounded-[50%]"
-      />
-    </div>
-  </Link>
-</div>
-<div className="mt-2">
-  <p>{name}</p>
-</div>
-<div className="flex flex-row justify-between mt-2">
-  <button className="border p-2 rounded-md cursor-pointer">
-    <div className="flex items-center">
-      <Image
-        src="../../../images/remove.svg"
-        alt="remove"
-        width={30}
-        height={30}
-      />
-      <h5 className="ml-2">Block</h5>
-    </div>
-  </button>
-</div> */
-}

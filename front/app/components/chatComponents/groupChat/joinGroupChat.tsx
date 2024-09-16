@@ -6,24 +6,26 @@ import { setJoinGroup } from '@/redux/features/chatSlices/create_join_GroupSlice
 import { toast } from 'sonner';
 import { selectProfileInfo } from '@/redux/features/profile/profileSlice';
 import { RootState } from '@/redux/store/store';
+import Cookies from "js-cookie";
+
+
+const token = Cookies.get("JWT_TOKEN");
 
 export default function JoinGroupChat(props:any) {
 
   const socket = useSelector((state:RootState) => state.socket.socket);
   const dispatch = useDispatch();
   const [refresh, setRefresh] = useState(true);
-  const [loading, setLoading] = useState(false);
   const [groups, setGroups] = useState<any>([]);
   const [password, setPassword] = useState<string>("");
-  // dispatch(setRefreshConvos(!refreshConvos))
 
   const userData = useSelector(selectProfileInfo);
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
 
   useEffect(() => {
-    console.log("kyaaa------------------------");
     const fetchChatGroups = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/chat/getChatGroups', { withCredentials: true });
+        const response = await axios.get(`${url}/chat/getChatGroups`, { withCredentials: true });
         
         if (response.status === 200) {
           const data = response.data;
@@ -36,10 +38,6 @@ export default function JoinGroupChat(props:any) {
       }
     };
 
-    // socket?.on("refreshJoinComp", () =>{
-    //   console.log("kyaaaaaaaah111111111");
-    //   setRefresh(!refresh);
-    // });
     
     fetchChatGroups();
   }, [refresh]);
@@ -51,7 +49,6 @@ export default function JoinGroupChat(props:any) {
       toast.error(`error: ${errorMessage}`);
     });
     socket?.on("refreshJoinComp", () =>{
-      console.log("kyaaaaaaaah111111111");
       setRefresh(!refresh);
     });
     socket?.on("joinSuccessfull", (successMessage:string) =>{
@@ -74,7 +71,7 @@ export default function JoinGroupChat(props:any) {
   }); 
 
   function joinGroupChat(groupId: string, groupChatsname:string) {
-    socket?.emit("joinGroupChat", { userId: userData.id, groupId, roomName: groupChatsname});
+    socket?.emit("joinGroupChat", { userId: userData.id, groupId, roomName: groupChatsname, token: token});
   }
 
   function joinProtectedGroupChat(groupId: string, groupChatsname: string) {
@@ -82,7 +79,7 @@ export default function JoinGroupChat(props:any) {
       toast.error("error: Required Password");
     }
     if (password) {
-      socket?.emit("joinGroupChat", { userId: userData.id, groupId, password, roomName: groupChatsname});
+      socket?.emit("joinGroupChat", { userId: userData.id, groupId, password, roomName: groupChatsname, token: token});
     }
   }  
 
@@ -107,7 +104,7 @@ export default function JoinGroupChat(props:any) {
           <div className='mt-[24px] flex flex-col items-center overflow-y-auto overflow-x-hidden no-scrollbar' >
             {groups.map((groupChats:any) => groupChats.status !== "Private" && groupChats.type !== "DM" && (
               <div className='flex flex-col justify-between sm:flex-row p-[16px] items-center mb-10 bg-[#9ca5cc] w-[60%] rounded-[34px] ' key={groupChats.id}>
-                <div className='flex justify-center items-center gap-[16px]'> <img className='h-[100px] w-[100px] ml-1 rounded-[50px] object-fill' src={`http://localhost:4000/${groupChats.avatar}`} alt={groupChats.avatar} />
+                <div className='flex justify-center items-center gap-[16px]'> <img className='h-[100px] w-[100px] ml-1 rounded-[50px] object-fill' src={`${url}/${groupChats.avatar}`} alt={groupChats.avatar} />
                   <div className='flex flex-col '>
                     <div className='text-[25px] font-normal text-[#2e2e2e] font-sans-only test'> {groupChats.name}</div>
                     <div className='text-[15px] font-normal sans-serif text-[#2e2e2e]'>{groupChats.status}</div>

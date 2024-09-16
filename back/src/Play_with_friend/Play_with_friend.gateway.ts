@@ -35,21 +35,18 @@ export class PlayFriendGateway implements OnGatewayDisconnect {
   async handleConnection(socket: Socket): Promise<void> {
 
 
-    console.log(this.acc_rqst);
     const token:any = socket.handshake.query.token;
     const senderId:any = socket.handshake.query.id;
+    const tar:any = socket.handshake.query.tar;
     
     if (token && token == "token_data")
     {
       
-      const tar:any = socket.handshake.query.tar;
       this.acc_rqst.set(tar,senderId);
-      console.log("maaaaaap",this.acc_rqst);
       return;
     }
     else if (token && token == "token_d")
     {
-      const tar:any = socket.handshake.query.tar;
       const send:any = socket.handshake.query.send;
       
       status.set(send,"yes");
@@ -62,7 +59,6 @@ export class PlayFriendGateway implements OnGatewayDisconnect {
       return;
     }
     const token_id = this.gameService.getUserInfosFromToken(token);
-    console.log("iiiiiiiiid",senderId);
     let user:any;
     if(token_id)
       user = await this.userService.getUser(token_id.sub);
@@ -75,8 +71,6 @@ export class PlayFriendGateway implements OnGatewayDisconnect {
     } 
     this.connectedUsers.set(socket.id, token_id.sub);
     const index: any = this.gameService.findIndexBySenderId(this.game,senderId,this.acc_rqst);
-    console.log("index",index);
-    console.log("======================================this.status",status.get(token_id));
     if (index != -1 && (status.get(token_id.sub) === "yes"))
     {
       status.set(token_id.sub, "no");
@@ -88,28 +82,24 @@ export class PlayFriendGateway implements OnGatewayDisconnect {
       this.game[index].players.push({id: socket.id, playerNb: 2, x: 880, y: 175 ,score:0, width: 20, height: 100,name:"player2",giveUp: false,db_id: "",pic: "",g_id: "",opponent_id:""});
 
       this.userService.updateProfile("inGame",this.connectedUsers.get(this.game[index].players[0].id));
-      this.eventEmitter.emit("refreshStatus");
+      //this.eventEmitter.emit("refreshStatus");
       this.userService.updateProfile("inGame",this.connectedUsers.get(this.game[index].players[1].id));
       this.eventEmitter.emit("refreshStatus");
 
       this.gameService.handle_id(senderId,"", socket.id,this.game);
       this.gameService.removeInviteToPlay(this.game[index].players);
       this.game[index].players[0].db_id = senderId;
-      console.log("-------------> after game this is : ",this.game);
       this.gameService.startTheGame(this.game[index].players, this.game[index].rooms, availibleRoomId, this.server, this.game[index].ball, this.canvas);
     }
     else
     {
-      console.log("-------------> befor new game this is : ",this.game);
       const newRoomId = socket.id;
       this.rooms[newRoomId] = [socket.id];
       socket.join(newRoomId);
       
-      console.log("this.rooms",this.rooms, "newRoomId", newRoomId);
-      this.players.push({id: newRoomId, playerNb: 1, x:0, y: 175,score: 0,width: 20, height: 100,name: "player1",giveUp:false,db_id: senderId,pic: "", g_id: "",opponent_id:""});
-      console.log("this players", this.players);
+      this.players.push({id: newRoomId, playerNb: 1, x:0, y: 175,score: 0,width: 20, height: 100,name: "player1",giveUp:false,db_id: senderId,pic: "", g_id: "",opponent_id: tar});
       const index = Object.keys(this.players);
-      await this.gameService.getReceiverIdBySenderId(senderId,this.players,this.opponents);
+      //await this.gameService.getReceiverIdBySenderId(senderId,this.players,this.opponents);
       let newBall:Ball = {...this.ball};
       const newGame: Game = {
         nb: this.id,
@@ -119,12 +109,10 @@ export class PlayFriendGateway implements OnGatewayDisconnect {
       };
       newGame.players.push(this.players[index[0]]);
       this.game.push(newGame);
-      //console.log(newGame);
       this.players = [];
       this.rooms = {};
       this.id++;
       this.gameService.handle_id(senderId,"", socket.id,this.game);
-      console.log("-------------> after new game this is : ",this.game);
     }
   }
     
@@ -167,7 +155,6 @@ export class PlayFriendGateway implements OnGatewayDisconnect {
   handleDisconnect(client: Socket) 
   {
     this.connectedUsers.delete(client.id);
-    console.log("handle disconnect");
     this.id = this.gameService.removeDataFromRooms(this.game, client.id,this.id,this.server,this.acc_rqst);
     this.players = [];
     this.rooms = {};
@@ -177,6 +164,5 @@ export class PlayFriendGateway implements OnGatewayDisconnect {
       this.game[indexs[i]].nb = i; 
     }
     this.id = this.game.length;
-    console.log(this.id,this.acc_rqst, this.game);
   }
 }

@@ -86,7 +86,7 @@ const {
   
   main()
     .catch((e) => {
-      console.error(e);
+      // console.error(e);
       process.exit(1);
     })
     .finally(async () => {

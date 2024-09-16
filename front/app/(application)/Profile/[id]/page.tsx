@@ -12,7 +12,6 @@ import NotUser from "../NotUser";
 import AuthWrapper from "@/app/authWrapper";
 
 export default function Profile(props: any) {
-  // const refreshNotifs = useSelector((state:RootState) => state.refreshNotifs.refreshNoifications);
   const [userData, setUserData] = useState<any>();
   const [isLoading, setIsLoading] = useState(true);
   const socket = useSelector((state: RootState) => state.socket.socket);
@@ -26,13 +25,13 @@ export default function Profile(props: any) {
   const [userNotFound, setUserNotFound] = useState(false);
 
   
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
   
   useEffect(() => {
     const getUserData = async () => {
-      console.log("useeffect ldakhl dyalha");
       try {
         const response = await axios.get(
-          `http://localhost:4000/user/getUserByUserId?user=${props.params.id}`,
+          `${url}/user/getUserByUserId?user=${props.params.id}`,
           { withCredentials: true }
           );
           setUserData(response.data);
@@ -47,13 +46,11 @@ export default function Profile(props: any) {
     getUserData();
   }, [props.params.id, refreshNotifs, refreshStatus]);
   
-  console.log("userid-- in props--------------", props.params.id);
-  console.log("userid------in redux store----------", myData.id);
   useEffect(() => {
     const sendFriendRequest = async () => {
       if (clicked) {
         try {
-          await axios.post(`http://localhost:4000/user/sendFriendRequest`, { sender: myData.id, target: props.params.id }, { withCredentials: true });
+          await axios.post(`${url}/user/sendFriendRequest`, { sender: myData.id, target: props.params.id }, { withCredentials: true });
           setIsclicked(false);
         } catch (error) {
           console.error("Error fetching users:", error);
@@ -67,14 +64,14 @@ export default function Profile(props: any) {
     const requestStatus = async () => {
       try {
         const areFriends = await axios.get(
-          `http://localhost:4000/user/checkIfFriend?myId=${myData.id}&&receiverId=${props.params.id}`,
+          `${url}/user/checkIfFriend?myId=${myData.id}&&receiverId=${props.params.id}`,
           { withCredentials: true }
         );
         if (areFriends.data === 1) {
           setRequestStatuss("Accepted");
           return;
         }
-        const status = await axios.get(`http://localhost:4000/user/requestStatus?myId=${myData.id}&&receiverId=${props.params.id}`, { withCredentials: true });
+        const status = await axios.get(`${url}/user/requestStatus?myId=${myData.id}&&receiverId=${props.params.id}`, { withCredentials: true });
         if (status.data) {
           if (status.data.senderId === myData.id && status.data.status === "Pending")
             setRequestStatuss("Pending");
@@ -91,22 +88,6 @@ export default function Profile(props: any) {
     };
     requestStatus();
   }, [props.params.id, refreshNotifs, refreshStatus]);
-
-  // useEffect(() => {
-  //   socket?.on("refreshFrontfriendShip", (channelStatus: any) => {
-  //     setRefreshNoifications(!refreshNotifs);
-  //   });
-
-  //   socket?.on("refreshStatus", () => {
-  //     console.log("socket ldakhl dyalha");
-  //     setRefreshStatus(!refreshStatus);
-  //   });
-
-  //   return () => {
-  //     socket?.off("refreshFrontfriendShip");
-  //     socket?.off("refreshStatus");
-  //   };
-  // });
 
   useEffect(() => {
     socket?.onAny((event:any) => {
@@ -134,7 +115,7 @@ export default function Profile(props: any) {
         try {
           setblock(false);
           await axios.post(
-            `http://localhost:4000/user/blockUser`,
+            `${url}/user/blockUser`,
             { myId: myData.id, target: props.params.id },
             { withCredentials: true }
           );
@@ -153,7 +134,7 @@ export default function Profile(props: any) {
           setUnblock(false);
           setRefreshNoifications(!refreshNotifs);
           await axios.post(
-            `http://localhost:4000/user/UnblockUser`,
+            `${url}/user/UnblockUser`,
             { myId: myData.id, target: props.params.id },
             { withCredentials: true }
           );
@@ -168,7 +149,7 @@ export default function Profile(props: any) {
   const acceptFriendRequest = async () => {
     try {
       axios.post(
-        `http://localhost:4000/user/accept`,
+        `${url}/user/accept`,
         { myId: myData.id, target: props.params.id },
         { withCredentials: true }
       );

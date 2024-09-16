@@ -21,10 +21,7 @@ export default function PersonnelInfo() {
     profileSelector.username || ""
   );
   const dispatch = useDispatch();
-  const presetKey = "r0th9bpt"; //doit in evn
-  const cloudName = "dfcgherll";
   const _api = axios.create();
-  console.log("profiledatahere", profileSelector);
 
   useEffect(() => {
     setIsLoading(false);
@@ -44,6 +41,10 @@ export default function PersonnelInfo() {
     }
   }, [profileSelector]);
 
+  
+
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+
   const handleAvatarChange = async (e: any) => {
     try {
       setIsLoading(true);
@@ -51,10 +52,10 @@ export default function PersonnelInfo() {
       if (!file) return;
       const formDate = new FormData();
       formDate.append("file", file);
-      formDate.append("upload_preset", presetKey);
+      formDate.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_KEY!);
 
       const res = await _api.post(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        process.env.NEXT_PUBLIC_CLOUDINARY_URL!,
         formDate,
         { withCredentials: false }
       );
@@ -93,17 +94,11 @@ export default function PersonnelInfo() {
         avatar: imagePath || profileSelector.avatar,
       };
 
-      console.log("------------",updatedProfileData.firstName);
-      console.log("heeeeere");
       
-      const res = await axios.post(
-        `http://localhost:4000/user/changeInfos`,
-        updatedProfileData
+      const res = await axios.post(`${url}/user/changeInfos`, updatedProfileData
         );
-        console.log("------------heloo",res.data);
         
-        dispatch(setProfileData(updatedProfileData));
-      console.log("------------heloo22",res);
+        dispatch(setProfileData({  ...profileSelector,...updatedProfileData}));
       toast.success("Your information has been changed successfully");
     } catch (error:any) {
       if (error.response.status === 400 || error.response.status === 401) {

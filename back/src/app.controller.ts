@@ -7,11 +7,6 @@ import { PrismaService } from './prisma.service';
 export class AppController {
   constructor(private readonly appService: AppService, private prisma: PrismaService) {}
   
-  
-  // @Post('/updateUser')
-  // async handleUpdatedUser(@Body() userId: any){
-  //   return this.prisma.updateUser(userId);
-  // }
   @Get("/")
   async healthCheck() {
     return "ok";

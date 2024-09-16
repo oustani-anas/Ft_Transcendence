@@ -1,15 +1,6 @@
 "use client"
-import React, { useEffect } from 'react';
-import Image from 'next/image';
+import React from 'react';
 import SearchPanel from '../SearchPanel';
-import { setFreindRequestInfo, setFreindInfo } from '../../../redux/features/freinds/requestSlice';
-import { useDispatch} from "react-redux"
-import { useState } from 'react';
-import { setAchievementInfo } from '../../../redux/features/achievement/achievementSlice';
-import AchievementData from '../../achiev.json';
-import FreindData from '../../freindslist.json';
-import allFreinds from '../../freinddata.json';
-import LeftBar from '@/app/components/leftBar';
 import PersonnelInfo from './PersonnelInfo';
 import QRcode from './QRcode';
 
@@ -18,7 +9,6 @@ const ChangeInfo = () => {
 
     
   return (
-    //had div d search bar w notification
     <div className="h-screen md:h-[100vh]  w-full flex flex-col no-scrollbar overflow-hidden">
         <div className='w-full h-[8%] flex flex-row justify-around items-center'>
           <SearchPanel />

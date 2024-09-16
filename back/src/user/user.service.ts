@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { Socket } from 'socket.io';
-import { UserGateway } from './user.gateway';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
@@ -417,7 +416,7 @@ export class UserService {
     if (!existingRecord) return;
 
     return this.prisma.achievement.updateMany({
-      where: { id: existingRecord.id }, // Updated to use userId instead of id
+      where: { id: existingRecord.id },
       data: {
         [achievement]: true
       }

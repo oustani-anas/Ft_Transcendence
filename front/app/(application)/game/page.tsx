@@ -2,15 +2,13 @@
 import PongGame from "./../../components/game//PongGame";
 import { useEffect, useRef, useState } from "react";
 import { PlayWithFriend } from "./../../components/game/PlayWithFriend";
-import Image from "next/image";
-// import { YourFriendsGame } from "@/app/(application)/game/againstOthers/againstFriend";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { selectProfileInfo } from "@/redux/features/profile/profileSlice";
 import animationData from   "../../../public/nothing.json"
 import Lottie from 'react-lottie-player';
 import Link from "next/link";
-import { io, Socket } from '@/../../node_modules/socket.io-client/build/esm/index';
+import { io } from '@/../../node_modules/socket.io-client/build/esm/index';
 import AuthWrapper from "@/app/authWrapper";
 
 export default function Home() {
@@ -21,27 +19,25 @@ export default function Home() {
   const [hToPlay, setHowToPlay] = useState<boolean>(false);
   const [activeButton, setActiveButton] = useState("ai");
 
-  const [groupData, setGroupData] = useState<any>([]);
   const buttonAi = useRef<HTMLDivElement>(null);
 
 
-  const userData = useSelector(selectProfileInfo);
 
   const [myFreinds, setMyFreinds] = useState([]);
 
   const profileInfo = useSelector(selectProfileInfo);
   
 
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
   
 
   useEffect(() => {
 
     const listFriends = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/user/userFreinds?userId=${profileInfo.id}`, { withCredentials: true });
+        const response = await axios.get(`${url}/user/userFreinds?userId=${profileInfo.id}`, { withCredentials: true });
         setMyFreinds(response.data);
       } catch (error:any) {
-        console.log("Error fetching user data:", error.response.data.message);
       }
 
     };
@@ -50,14 +46,13 @@ export default function Home() {
 
   const Play = async (tar:string):Promise<void> => 
   {
-    console.log("invite to play");
 
     await axios.post(
-      `http://localhost:4000/user/sendPlayAgain`,
-      { sender: profileInfo.id, target:tar}, // to handel
+      `${url}/user/sendPlayAgain`,
+      { sender: profileInfo.id, target:tar},
       { withCredentials: true });
-      console.log("connected1")
-      const socket = io('http://localhost:4000', {
+
+      const socket = io(`${url}`, {
         path: '/play',
         query: {
           token: "token_data",
@@ -67,17 +62,6 @@ export default function Home() {
       });
       socket.emit('checker', { key:profileInfo.id, value: tar });
       }
-
-  // const Play = async (tar:string):Promise<void> => 
-  // {
-  //   console.log("invite to play");
-  //   console.log(userData.id);
-  //   // console.log(groupData.members[0].id);
-  //   await axios.post(
-  //     `http://localhost:4000/user/sendPlayAgain`,
-  //     { sender: userData.id, target:tar}, // to handel
-  //     { withCredentials: true });
-  // }
 
   const handleClickFr = () => {
     if (buttonAi.current) buttonAi.current.style.display = "none";
@@ -92,16 +76,6 @@ export default function Home() {
       return !prev;
     });
   };
-
-
-
-  // const PlayWithFriend = () => {
-  //   setHide("hidden");
-  //   setplayFriends((prev) => {
-  //     return !prev;
-  //   });
-  // };
-
 
   return (
     <AuthWrapper>
@@ -172,7 +146,7 @@ export default function Home() {
                               </div>
                             </div>
                             <div className="flex mt-4 md:text-[16px] text-[12px] sm:text-[14px] md:w-[120px] w-max-content">
-                              <Link href="../Play" onClick={() => Play(value.id)}>
+                              <Link href={`/Play/${value.id}`} onClick={() => Play(value.id)}>
                                 <button className=" md:w-[120px] w-max-content px-3 h-[45px] hover:bg-[#4f587d] bg-[#6E7AAE] text-[#D7D7D7] rounded-[15px] ml-6" >
                                   Invite
                                 </button>

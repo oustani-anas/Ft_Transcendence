@@ -17,22 +17,7 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private UserService: UserService, private jwt: JwtService) { }
   @WebSocketServer()
   server: Server;
-
-  // async afterInit(client: Socket) {
-  //   client.use(async (request: any, next) => {
-  //     const token = request.handshake.auth.jwt_token ?? request.handshake.headers.jwt_token;
-  //     try {
-  //       const payload = await this.jwt.verify(token, {
-  //         secret: 'dontTellAnyone'
-  //       })
-  //     }
-  //     catch (error) {
-  //       // throw new WsException('Invalid Token');
-  //     }
-  //     next()
-  //   })
-  // }
-
+  
   @OnEvent('refreshNotifications')
   async refreshNotifications(client: Socket, payload: any) {
     this.server.emit("refreshFrontNotifications");
@@ -52,9 +37,6 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @OnEvent('refreshStatus')
   async refreshStatus(client: any, type: string, id: string) {
-    // if  (type === "logOut")
-    //   client.broadcast.emit("refreshStatus");
-    // else
       this.server.emit("refreshStatus", type, id);
   }
 
@@ -83,7 +65,7 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       const token = client.handshake.auth.jwt_token ?? client.handshake.headers.jwt_token;
       const payload = this.jwt.verify(token, {
-        secret: 'dontTellAnyone'
+        secret: `${process.env.SECRET_KEY}`
       });
       const userId = payload.sub;
       client.data.userId = userId;

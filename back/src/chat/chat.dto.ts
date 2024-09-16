@@ -53,6 +53,10 @@ export class ChangeToProtected {
   @IsNotEmpty()
   @Length(4, 16)
   password: string;
+
+  @IsString()
+  @IsNotEmpty()
+  token: string;
 }
 
 export class ChangeProtectedChannelPassword {
@@ -66,9 +70,3 @@ export class ChangeProtectedChannelPassword {
   @Length(4, 16)
   password: string;
 }
-
-
-// message: `announcement ${userData.id.split('-')[0]} has set this room to Protected`,
-// roomId: groupData?.id,
-// userId: userData.id,
-// password: Password

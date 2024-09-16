@@ -2,8 +2,6 @@ import { io, Socket } from '@/../../node_modules/socket.io-client/build/esm/inde
 import React, { useEffect, useRef, useState } from 'react'
 import { Winner } from './Winner';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
-import { selectProfileInfo } from '@/redux/features/profile/profileSlice';
 import Cookies from 'js-cookie';
 
 export const PlayWithFriend = () => {
@@ -43,18 +41,16 @@ export const PlayWithFriend = () => {
         setIsSmallScreen(window.innerWidth < 910 || window.innerHeight < 450);
       };
   
-      handleResize(); // Check initially
+      handleResize();
       window.addEventListener('resize', handleResize);
       return () => window.removeEventListener('resize', handleResize);
     }, []);
     
-    //select canvas
     let canv = canvasRef.current;
     const [ball, setBall] = useState<Ball>();
 
 
     function getMouesPosition(e:any, canvas: HTMLCanvasElement):any {
-      console.log(e);
       var mouseX = e * canvas.width / canvas.clientWidth | 0;
       var mouseY = e * canvas.height / canvas.clientHeight | 0;
       return {x: mouseX, y: mouseY};
@@ -68,8 +64,6 @@ export const PlayWithFriend = () => {
       }
     },[playAgain])
   
-  
-    //ball interface
     interface Ball{
       x:number;
       y:number;
@@ -185,8 +179,6 @@ export const PlayWithFriend = () => {
         if(player && canvas && computer)
         {
           if (e.key === "ArrowDown") {
-          // if(player.y >= 490 || computer?.y >= 490)
-          //   return;
           socket?.emit("arrow_move","up");
         }
       }
@@ -196,7 +188,6 @@ export const PlayWithFriend = () => {
           {
             let rect = canvas.getBoundingClientRect();
             let newPosition = getMouesPosition(e.clientY - rect.top, canvas).y;
-            //send to the server positon of the player
             socket?.emit("mouse_move",newPosition);
           }
       };
@@ -211,25 +202,20 @@ export const PlayWithFriend = () => {
     const render = (data:Game) => {
       drawRect();
       drawNet()
-      //draw the ball
       drawCircle(data.ball);
-      //draw the player
       drawFirstPlayer(data.players[0]);
       drawSecondPlayer(data.players[1]);
       setPlayer(data.players[0]);
       setComputer(data.players[1]);
     } 
 
+    const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
     
     const fetchData = async () => {
       try {
-      const response = await axios.get('http://localhost:4000/user/me', {withCredentials: true});
+      const response = await axios.get(`${url}/user/me`, {withCredentials: true});
       const userData = response.data.user;
       socket?.emit("user_id",userData.id);
-      // console.log("myData");
-      // console.log(myData.id);
-      // console.log(userData);
-      // socket?.emit("playAgainRequest", myData.id)
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
@@ -242,12 +228,11 @@ export const PlayWithFriend = () => {
           setText("freind has join");
           if (divv.current)
           {
-            console.log("remove div");
             divv.current.style.display = 'none';
             fetchData();
           }
           setStart(false);
-          setGame(true);//todo update
+          setGame(true);
         }
         else if (event == "update")
         {
@@ -258,7 +243,6 @@ export const PlayWithFriend = () => {
           canv = canvasRef.current;
           if(canv)
           {
-            console.log("start the game");
             setCanvas(canv)
             setCtx(canv.getContext('2d'))
           }
@@ -266,7 +250,6 @@ export const PlayWithFriend = () => {
         }
         else if(event == "winner")
         {
-          // checkWinner(data);
           setComputerWinnes((prev) => {return !prev})
           setWinnerName(data);
         }
@@ -283,16 +266,14 @@ export const PlayWithFriend = () => {
 
     useEffect(() => {
 
-      console.log("send connection");
       const token = Cookies.get('JWT_TOKEN');
-      const newSocket = io("http://localhost:4000/",{
+      const newSocket = io(`${url}/`,{
         path: '/game',
         query: {
           token: token
         }
       });
       setSocket(newSocket);
-      console.log("newSocket", newSocket.id);
 
       setStart(true);
       setText("wait for freind to join");

@@ -24,8 +24,6 @@ export class GameRandomService {
 
     async addGameResult(players: Player[], userId: string, result: boolean) {
 
-      // console.log("kyaaaaaaaaaaah", players);
-  
         const status = players[0].score > players[1].score ? "win" : "lose";
         const data:any = {
           userId: players[0].db_id,
@@ -45,8 +43,6 @@ export class GameRandomService {
         return await this.prisma.gameResult.create({ data: data }) && await this.prisma.gameResult.create({ data: data2 });
     
     }
-
-
     
     checkWinner(players: Player[],rooms:{[roomId: string]: string[];}, roomId: string, server: Server): boolean{
       if (!players[0] || !players[1])
@@ -190,7 +186,6 @@ export class GameRandomService {
         {
           if(game[i].players[0].score < 5 && game[i].players[1].score < 5)
           {
-            //this player is give up the game
             const roomId = Object.keys(game[i].rooms);
             if (game[i].players[0].id === id)
             {
@@ -256,11 +251,9 @@ export class GameRandomService {
         };
         server.to(roomId).emit('update', gameData);
         
-        // Update ball position
         ball.x += ball.velocityX * ball.speed;
         ball.y += ball.velocityY * ball.speed;
         
-        // Handle ball collisions with canvas boundaries
         if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
           ball.velocityY = -ball.velocityY;
         }
@@ -329,10 +322,8 @@ export class GameRandomService {
 
   public getUserInfosFromToken(token: string): any {
     try {
-      console.log('token:', token);
 
-      const decoded = jwt.verify(token, 'dontTellAnyone');
-      console.log('decoded -----------------:', decoded);
+      const decoded = jwt.verify(token, `${process.env.SECRET_KEY}`);
 
       return decoded;
     } catch (error) {

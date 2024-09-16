@@ -10,8 +10,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation'
 import { setRefreshConvos } from '@/redux/features/chatSlices/refreshSlice';
 import NotUser from '../NotUser';
-import { io, Socket } from '@/../../node_modules/socket.io-client/build/esm/index';
-import AuthWrapper from '@/app/authWrapper';
+import { io, } from '@/../../node_modules/socket.io-client/build/esm/index';
+import Cookies from "js-cookie";
 
 export default function Page(props: any) {
 
@@ -38,26 +38,29 @@ export default function Page(props: any) {
   const socket = useSelector((state: RootState) => state.socket.socket);
   const router = useRouter();
 
+  const token = Cookies.get("JWT_TOKEN");
+
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
   useEffect(() => {
     const fetchChatGroups = async () => {
 
       try {
-        console.log("tist wahc dkhol wla la hh");
-        const response = await axios.get(`http://localhost:4000/chat/getGroupByGroupId?groupId=${props.params.id}&&myId=${userData.id}`, { withCredentials: true });
+        
+        
+        socket.emit('addSocketToThisUserRoom', props.params.id);
+        const response = await axios.get(`${url}/chat/getGroupByGroupId?groupId=${props.params.id}&&myId=${userData.id}`, { withCredentials: true });
         if (response.status === 200) {
-          const msgs = await axios.get(`http://localhost:4000/chat/getMsgsByGroupId?groupId=${props.params.id}&&myId=${userData.id}`, { withCredentials: true });
-          const blockListResponse = await axios.get(`http://localhost:4000/user/myBlockList?myId=${userData.id}`, { withCredentials: true });
+          const msgs = await axios.get(`${url}/chat/getMsgsByGroupId?groupId=${props.params.id}&&myId=${userData.id}`, { withCredentials: true });
+          const blockListResponse = await axios.get(`${url}/user/myBlockList?myId=${userData.id}`, { withCredentials: true });
           setMyBlockList(blockListResponse.data);
           setMessages(msgs.data.message);
           const data = response.data;
           setGroupData(data.data);
-          console.log("data.data", data.data);
-          console.log("nani dfk hh 1");
-
+          
           if (data.data.type === "DM") {
 
-            const myData = await axios.get(`http://localhost:4000/user/getUserByUserId?user=${userData.id}`, { withCredentials: true });
-            const isFriend = await axios.get(`http://localhost:4000/user/checkIfFriend?myId=${userData.id}&&receiverId=${data.data.members[0].id}`, { withCredentials: true });
+            const myData = await axios.get(`${url}/user/getUserByUserId?user=${userData.id}`, { withCredentials: true });
+            const isFriend = await axios.get(`${url}/user/checkIfFriend?myId=${userData.id}&&receiverId=${data.data.members[0].id}`, { withCredentials: true });
 
             if (myData.data.blockedByUsers.some((userid: any) => userid === data.data.members[0].id))
               setBlockType("blockedBy")
@@ -91,9 +94,8 @@ export default function Page(props: any) {
     setMemberSettings(newMemberSettings);
   };
 
-  function handleChannelCommands(arg: string, data: any, index: any, duration: string) {
-    console.log("wach hadi hya li kadkhol liha ???");
-
+  function handleChannelCommands(arg: string, data: any, index: any, duration:string) {
+    
     socket?.emit(arg, {
       username: userData.username,
       message: "",
@@ -101,7 +103,8 @@ export default function Page(props: any) {
       target_username: data.username,
       target: data.id,
       roomId: groupData?.id,
-      duration: duration
+      duration: duration,
+      token: token
     })
     handleToggleSettings(index);
   }
@@ -147,6 +150,14 @@ export default function Page(props: any) {
 
     socket?.on("refreshAllInFront", (myId: string) => {
       setRefreshStatus(!refreshStatus);
+      dispatch(setRefreshConvos(!refreshConvos))
+    });
+
+    socket?.on("left",(myId:string) =>{
+      router.push('/Chat');
+      
+      toast.success(`You left ${groupData.name}`)
+      dispatch(setRefreshConvos(!refreshConvos))
     });
 
     socket?.on("alreadyUnmuted", (myId: string) => {
@@ -157,6 +168,7 @@ export default function Page(props: any) {
     });
 
     return () => {
+      socket?.off("left");
       socket?.off("refresh");
       socket?.off("refreshStatus");
       socket?.off("getAllMessages");
@@ -180,6 +192,7 @@ export default function Page(props: any) {
         message,
         roomId: groupData?.id,
         userId: userData.id,
+        token: token
       });
     }
   };
@@ -190,8 +203,7 @@ export default function Page(props: any) {
   };
 
   function checkIfUserMuted(userId: string) {
-    console.log("groupData?.mutedUsers", groupData?.mutedUsers);
-    return groupData?.mutedUsers.some((user: string) => user.split(" ")[0] === userId);
+    return groupData?.mutedUsers.some((user:string) => user.split(" ")[0] === userId);
   }
 
   function checkIfAdmin(userId: string) {
@@ -203,6 +215,7 @@ export default function Page(props: any) {
       message: `announcement ${userData.username} has set this room to Public`,
       roomId: groupData?.id,
       userId: userData.id,
+      token: token
     });
   }
 
@@ -213,14 +226,15 @@ export default function Page(props: any) {
         toast.error("Error: Password must be between 4 and 16 characters");
         return;
       }
-      const data = {
-        message: `announcement ${userData.username} has set this room to Protected`,
-        roomId: groupData?.id,
-        userId: userData.id,
-        password: Password
-      };
-      const response = await axios.post('http://localhost:4000/chat/setRoomToProtected', data, { withCredentials: true });
-
+        const data = {
+          message: `announcement ${userData.username} has set this room to Protected`,
+          roomId: groupData?.id,
+          userId: userData.id,
+          password: Password,
+          token: Cookies.get('JWT_TOKEN')
+        };
+      const response = await axios.post(`${url}/chat/setRoomToProtected`, data, { withCredentials: true });
+      
     } catch (error: any) {
       if (error.response && error.response.status === 400) {
         toast.error(`Error: ${error.response.data.message}`, error.response.status);
@@ -237,11 +251,11 @@ export default function Page(props: any) {
         toast.error("Error: Password must be between 4 and 16 characters");
         return;
       }
-      const data = {
-        roomId: groupData?.id,
-        password: Password
-      };
-      const response = await axios.post('http://localhost:4000/chat/changeRoomPassword', data, { withCredentials: true });
+        const data = {
+          roomId: groupData?.id,
+          password: Password
+        };
+      const response = await axios.post(`${url}/chat/changeRoomPassword`, data, { withCredentials: true });
       toast.success("The password have been changed successfully");
 
     } catch (error: any) {
@@ -260,25 +274,15 @@ export default function Page(props: any) {
       roomId: groupData?.id,
       userId: userData.id,
       username: userData.username,
+      token: token
     });
-    router.push('/Chat');
-
-    toast.success(`You left ${groupData.name}`)
-    dispatch(setRefreshConvos(!refreshConvos))
   }
+  
+const Play = async (tar:any):Promise<void> => 
+  {
+    await axios.post(`${url}/user/sendPlayAgain`,{ sender: userData.id, target:tar}, { withCredentials: true });
 
-  const Play = async (tar: any): Promise<void> => {
-    console.log("invite to play");
-    console.log(userData.id);
-    console.log(tar);
-    await axios.post(`http://localhost:4000/user/sendPlayAgain`, { sender: userData.id, target: tar }, { withCredentials: true });
-
-    for (let i = 0; i < 10000000; i++) {
-      i *= 1;
-    }
-    console.log("connected2")
-
-    const socket = io('http://localhost:4000', {
+    const socket = io(`${url}`, {
       path: '/play',
       query: {
         token: "token_data",
@@ -286,6 +290,12 @@ export default function Page(props: any) {
         tar: tar
       }
     });
+
+    // router.push({
+    //   pathname: '/Play',
+    //   query: { tar: tar, },
+    // });
+
     socket.emit('accepted_request', { key: userData.id, value: tar });
   }
 
@@ -293,8 +303,7 @@ export default function Page(props: any) {
     const sendPlayRequest = async () => {
       if (clicked) {
         try {
-          console.log("wach DKHOL hh")
-          await axios.post(`http://localhost:4000/game/sendPlayRequest`, { sender: userData.id, target: groupData.members[0].id }, { withCredentials: true });
+          await axios.post(`${url}/game/sendPlayRequest`, { sender: userData.id, target: groupData.members[0].id}, { withCredentials: true } );
           setIsclicked(false);
         } catch (error) {
           console.error("Error fetching users:", error);
@@ -344,7 +353,7 @@ export default function Page(props: any) {
                       :
                       (
                         <div className='rounded-[20px] w-[200px] h-[140px] top-[90px] right-8 absolute mr-[10px] flex flex-col items-center justify-evenly border-[1px] bg-white'>
-                          <Link href="../Play">
+                          <Link href={`/Play/${groupData.members[0].id}`} >
                             <button className='font-normal text-[22px] hover:text-[#7583b9] text-[#4e5c95] font-sans-only flex justify-center items-center hover:border-l hover:border-r border-white rounded-tr-[20px] rounded-tl-[20px] gap-[10px] ' onClick={() => Play(groupData.members[0].id)}>Invite to Play</button>
                           </Link>
                           <Link href={`/Profile/${groupData.members[0].id}`} className='font-normal text-[22px] hover:text-[#7583b9] text-[#4e5c95] font-sans-only flex justify-center items-center hover:border-l hover:border-r border-white rounded-tr-[20px] rounded-tl-[20px] gap-[10px]'> visit profile </Link>

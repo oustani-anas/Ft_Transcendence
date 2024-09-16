@@ -21,12 +21,14 @@ export default function SearchPanel() {
   const [myNotification, setMyNotifications] = useState<[]>();
   const [invitToPlay, setInvitToPlay] = useState<[]>();
 
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+
   useEffect(() => {
     const getUsers = async (searchForUser: string) => {
       if (searchForUser.length > 0) {
         try {
 
-          const response = await axios.get(`http://localhost:4000/user/getAllUsers?input=${searchForUser}`, { withCredentials: true });
+          const response = await axios.get(`${url}/user/getAllUsers?input=${searchForUser}`, { withCredentials: true });
 
           setAllUsers(response.data);
         } catch (error) {
@@ -41,7 +43,7 @@ export default function SearchPanel() {
   useEffect(() => {
     const getMyNotifications = async () => {
       try {
-        const notifications = await axios.get(`http://localhost:4000/user/getMyNotifications?userId=${myData.id}`, { withCredentials: true });
+        const notifications = await axios.get(`${url}/user/getMyNotifications?userId=${myData.id}`, { withCredentials: true });
         setMyNotifications(notifications.data);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -54,7 +56,7 @@ export default function SearchPanel() {
   useEffect(() => {
     const getInviteToPlay = async () => {
       try {
-        const notifications = await axios.get(`http://localhost:4000/user/getInviteToPlay?userId=${myData.id}`, { withCredentials: true });
+        const notifications = await axios.get(`${url}/user/getInviteToPlay?userId=${myData.id}`, { withCredentials: true });
         setInvitToPlay(notifications.data);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -75,7 +77,7 @@ export default function SearchPanel() {
 
   const acceptFriendRequest = async (notif: any) => {
     try {
-      axios.post(`http://localhost:4000/user/acceptFriendRequest`, { notif, myId: myData.id }, { withCredentials: true });
+      axios.post(`${url}/user/acceptFriendRequest`, { notif, myId: myData.id }, { withCredentials: true });
       setRefreshNoifications(!refreshNotifs);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -85,7 +87,7 @@ export default function SearchPanel() {
 
   const declineFriendRequest = async (notif: any) => {
     try {
-      axios.post(`http://localhost:4000/user/declineFriendRequest`, { notif, myId: myData.id }, { withCredentials: true });
+      axios.post(`${url}/user/declineFriendRequest`, { notif, myId: myData.id }, { withCredentials: true });
       setRefreshNoifications(!refreshNotifs);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -95,12 +97,10 @@ export default function SearchPanel() {
 
   const acceptInvitToPlay = async (notif: any) => {
     try {
-      await axios.post(`http://localhost:4000/user/acceptInviteToPlay`, { notif, myId: myData.id }, { withCredentials: true });
+      await axios.post(`${url}/user/acceptInviteToPlay`, { notif, myId: myData.id }, { withCredentials: true });
       setRefreshNoifications(!refreshNotifs);
-      console.log("connected4")
 
-      console.log("-------ach khassni anas",notif.senderId,notif.receiverId);
-      const socket = io('http://localhost:4000', {
+      const socket = io(`${url}`, {
         path: '/play',
         query: {
           token: "token_d",
@@ -119,7 +119,7 @@ export default function SearchPanel() {
 
   const declineInvitToPlay = async (notif: any) => {
     try {
-      axios.post(`http://localhost:4000/user/declineInviteToPlay`, { notif, myId: myData.id }, { withCredentials: true });
+      axios.post(`${url}/user/declineInviteToPlay`, { notif, myId: myData.id }, { withCredentials: true });
       setRefreshNoifications(!refreshNotifs);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -170,13 +170,12 @@ export default function SearchPanel() {
           </div>
         )}
       </div>
-      {/* ----------------------------------------------------------------------------------------------------------------------------- */}
       <div className='notifications relative bg-white p-2 rounded-lg'>
         <img src="../../../images/Bell.svg" alt="../../../images/Bell.svg" className='w-8 h-8' onClick={() => { setIsClicked(!isClicked); setRefreshNoifications(!refreshNotifs) }} />
         {isClicked && (
           <div className='mt-2 h-[400px] 2sm:w-[400px] sm:w-[500px] w-full bg-white absolute -right-4 sm:right-0 z-[1000] transition-all rounded-[10px] flex  items-center flex-col pt-5 gap-3 overflow-y-visible overflow-x-hidden no-scrollbar pb-5 border-[2px]'>
             {invitToPlay && invitToPlay.map((notif: any, index: any) =>
-              <>
+              <React.Fragment key={index}>
                 {notif.status === "Pending" ? (
                   <>
 
@@ -187,9 +186,6 @@ export default function SearchPanel() {
                             <div className=' h-[50px] w-[50px] rounded-full overflow-hidden'>
                               <img className='h-full w-full object-cover' src={`${notif.sender.avatar}`} alt={`${notif.sender.avatar}`} />
                             </div>
-                            {/* <div className='absolute top-0 -right-2 h-[20px] w-[20px] rounded-[12px] bg-[#7239D3]  flex items-center justify-center' >
-                              <img className='h-[9px] w-[9px]' src="/Vector.svg" alt="/Vector.svg" />
-                            </div> */}
                           </div>
                           <div className='flex flex-col '>
                             <div className='font-bold text-[#452975]'>Let's Play</div>
@@ -197,7 +193,7 @@ export default function SearchPanel() {
                           </div>
                         </div>
                         <div className='flex flex-col sm:flex-row gap-1 pr-3'>
-                          <Link href="../Play">
+                          <Link href={`../Play/${notif.senderId}`}>
                             <button className='rounded-[8px] h-[28px] w-[84px] text-[14px] flex items-center justify-center text-white  font-semibold hover:scale-[1.05] transition-all duration-500 hover:bg-[#7449c0] bg-[#7239D3]' onClick={() => acceptInvitToPlay(notif)}>accept</button>
                           </Link>
                           <button className='rounded-[8px] h-[28px] w-[84px] text-[14px] flex items-center justify-center text-[#452b72]  font-semibold hover:scale-[1.05] transition-all duration-500 hover:bg-[#d9d8db]  bg-[#e5e2e9]' onClick={() => declineInvitToPlay(notif)}>decline</button>
@@ -206,12 +202,11 @@ export default function SearchPanel() {
                     )}
                   </>
                 ) : false}
-              </>
+              </React.Fragment>
             )}
-            {/* ----------------------------------------------------------------------------------------------------------------------------- */}
 
             {myNotification && myNotification.map((notif: any, index: any) =>
-              <>
+              <React.Fragment key={index}>
                 {notif.status === "Pending" ? (
                   <>
 
@@ -316,11 +311,10 @@ export default function SearchPanel() {
                       )
                     }
 
-              </>
+              </React.Fragment>
             )}
           </div>
         )}
-        {/* ----------------------------------------------------------------------------------------------------------------------------- */}
       </div>
     </div>
   )
