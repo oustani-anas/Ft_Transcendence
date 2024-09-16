@@ -1,38 +1,87 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-node_modules
-.next
-dist
-/.pnp
-.pnp.js
-prisma/migrations
-.yarn/install-state.gz
-
-# testing
-/coverage
-
-# next.js
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
+# Node.js
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
-# local env files
-.env*.local
+# Environment Variables
+.env
+.env.*.local
 
-# vercel
-.vercel
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+/back/logs
+/front/logs
+*.log
 
-# typescript
+# Dependency directories
+.backpack/
+.next/
+dist/
+build/
+.cache/
+.out/
+.vscode/
+
+# Compiled files and directories
 *.tsbuildinfo
-next-env.d.ts
+
+# Debugging
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Test coverage
+coverage/
+.nyc_output/
+jest/
+
+# Production
+build/
+/back/dist/
+/front/.next/
+/front/out/
+
+# Temporary files and directories
+tmp/
+temp/
+*.tmp
+
+# Prisma (for NestJS with Prisma)
+prisma/migrations/
+prisma/dev.db
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Ignoring MacOS system files
+.DS_Store
+
+# Ignoring specific editor files (e.g., Visual Studio Code, JetBrains)
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ESLint cache
+.eslintcache
+
+# Prettier formatting files
+.prettierignore
+
+# Parcel Cache (in case used)
+.cache/
+
+# Ignore nextjs static files from export
+out/
+
+# Ignore the "local" folder which might contain specific non-tracked dev files
+local/
