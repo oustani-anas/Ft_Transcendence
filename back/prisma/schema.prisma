@@ -1,4 +1,3 @@
-
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
@@ -8,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DB_URL")
+  url      = "postgresql://mazino:mazino@db:5432/PGdb"
 }
 model User {
   id                   String          @id

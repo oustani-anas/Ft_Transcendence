@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { useSelector } from "react-redux";
+import { selectProfileInfo } from "@/redux/features/profile/profileSlice";
+import axios from "axios";
 
 export default function Achievement({
   name,

@@ -1,8 +1,10 @@
 import LastGames from './LastGames';
 import Link from 'next/link';
-import { useSelector } from 'react-redux';
-import { selectProfileInfo } from '../../../redux/features/profile/profileSlice';
-import {  useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectProfileInfo, setProfileData } from '../../../redux/features/profile/profileSlice';
+import axios from 'axios';
+import { Suspense, use, useEffect, useState } from 'react';
+import { Skeleton } from '@nextui-org/react';
 import CustomLoading from '../loading';
 
 export default function Profile() {

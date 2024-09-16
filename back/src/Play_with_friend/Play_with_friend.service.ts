@@ -23,6 +23,8 @@ export class GameService {
 
     async addGameResult(players: Player[], userId: string, result: boolean) {
 
+      // console.log("kyaaaaaaaaaaah", players);
+  
         const status = players[0].score > players[1].score ? "win" : "lose";
         const data:any = {
           userId: players[0].db_id,
@@ -80,6 +82,8 @@ export class GameService {
             status: 'accepted',
           },
         });
+        if (invite)
+          console.log("hada howa lisft lik l invite:",invite.senderId);
       } catch (error) {
         console.error('Error finding sender:', error);
       }
@@ -88,6 +92,7 @@ export class GameService {
     findIndexBySenderId(games :Game[],id:string, map:Map<string,string>):number
     {
       let result : number = -1;
+      console.log("dkhal");
       const index = Object.keys(games);
 
       
@@ -96,6 +101,7 @@ export class GameService {
       {
         if(!games[index[i]].players[0].opponent_id)
           continue;
+        //console.log("--->[",games[index[i]].players[0].opponent_id, id , map.get(id) , games[index[i]].players[0].db_id,"]---<");
         if(games[index[i]].players[0].opponent_id === id && map.get(id) === games[index[i]].players[0].db_id)
         {
           //map.delete(id);
@@ -113,6 +119,7 @@ export class GameService {
             senderId: senderId
           }
         });
+        console.log("invite back ndakhel opponents_id",invite);
         if (invite) {
           player[0].opponent_id = invite.receiverId;
           opponents.push(invite.receiverId);
@@ -233,6 +240,7 @@ export class GameService {
         });
 
         if (deletedInvite) {
+          console.log("Invite removed successfully");
         }
         
       } catch (error) {
@@ -255,14 +263,14 @@ export class GameService {
                 game[i].players[1].score = 5;
                 game[i].players[0].giveUp = true;
                 server.to(roomId[0]).emit("winner",game[i].players[1].name);
-                //this.addGameResult(game[i].players, game[i].players[1].db_id,false);
+                this.addGameResult(game[i].players, game[i].players[1].db_id,false);
               }
               else
               {
                 game[i].players[0].score = 5;
                 game[i].players[1].giveUp = true;
                 server.to(roomId[0]).emit("winner",game[i].players[0].name);
-                //this.addGameResult(game[i].players, game[i].players[0].db_id,true);
+                this.addGameResult(game[i].players, game[i].players[0].db_id,true);
               }
             }
             data_map.forEach((value, key) => {
@@ -272,7 +280,7 @@ export class GameService {
             this.userService.updateProfile("Online", game[i].players[0].db_id);
             this.userService.updateProfile("Online", game[i].players[1].db_id);
             this.eventEmitter.emit("refreshStatus");
-            game[i].players = game[i].players.filter(player => player.id !== id);
+            game[i].players = game[i].players.filter(player => player.id !== id);//to think about it
             gameId--;
             game.splice(i, 1);
             break;
@@ -280,10 +288,12 @@ export class GameService {
         }
         else
         {
+          //console.log("player in the game removed",game[i].players[0]);
           if(game[i].players[0])
           {
             if (game[i].players[0].id === id && game[i].players.length == 1)
             {
+              //console.log("delet from map",game[i].players[0].opponent_id, game[i].players[0].db_id);
               data_map.forEach((value, key) => {
                 if (key === game[i].players[0].opponent_id && value === game[i].players[0].db_id) {
                   data_map.delete(key);
@@ -328,9 +338,9 @@ export class GameService {
       let collisionResult = this.collision(ball, canvas, players);
       if (collisionResult) {
         if (ball.x < canvas.width / 2)
-          ball.velocityX =  Math.abs(ball.velocityX);
+          ball.velocityX = 1.05 * Math.abs(ball.velocityX);
         else
-          ball.velocityX = -1 * Math.abs(ball.velocityX);
+          ball.velocityX = -1.05 * Math.abs(ball.velocityX);
       }
        if (players[0] && players[1])
        {
@@ -393,7 +403,7 @@ export class GameService {
 
   public getUserInfosFromToken(token: string): any {
     try {
-      const decoded = jwt.verify(token, `${process.env.SECRET_KEY}`);
+      const decoded = jwt.verify(token, "dontTellAnyone");
       return decoded;
     } catch (error) {
       console.error('JWT verification failed:', error.message);

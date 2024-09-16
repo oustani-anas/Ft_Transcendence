@@ -11,6 +11,8 @@ interface Props {
   winnerName: string;
 }
 
+//handle if the player send play again and quite
+
 export const Winner = ({ setPlayAgain, setWinning, winnerName}:Props) => {
 
   return (

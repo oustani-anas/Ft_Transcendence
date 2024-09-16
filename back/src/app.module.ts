@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ChatService } from './chat/chat.service';
 import { ChatController } from './chat/chat.controller';
-import { ConfigModule } from '@nestjs/config';
 import { ChatModule } from './chat/chat.module';
 import { PrismaService } from './prisma.service';
 import { AuthModule } from './auth/auth.module';
@@ -14,7 +13,11 @@ import { GameModule } from './random-friend/game.module';
 import { PlayFriendModule } from './Play_with_friend/game.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), ChatModule, AuthModule, UserModule,GameModule,PlayFriendModule],
+  imports: [ChatModule, AuthModule, UserModule,GameModule,PlayFriendModule, JwtModule.register({
+    global: true,
+    secret: 'dontTellAnyone',
+    signOptions: { expiresIn: '30d' },
+  })],
   controllers: [AppController, ChatController],
   providers: [AppService, ChatService, UserService, PrismaService, JwtService],
 })

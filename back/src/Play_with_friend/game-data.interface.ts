@@ -4,6 +4,7 @@ export interface Canvas{
     width: number;
 }
 
+//ball  interface
 export interface Ball{
     x:number;
     y:number;

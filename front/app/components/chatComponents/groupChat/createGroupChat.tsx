@@ -6,9 +6,7 @@ import { selectProfileInfo } from '@/redux/features/profile/profileSlice';
 import { RootState } from '@/redux/store/store';
 import FreindInfo from '../../profile/friends/FreindInfo';
 import { toast } from 'sonner';
-import Cookies from "js-cookie";
 
-const token = Cookies.get("JWT_TOKEN");
 export default function createGroupChat(props: any) {
   const [passWord, setPassWord] = useState("hidden");
   const [showAddMembers, setShowAddMembers] = useState("hidden");
@@ -28,14 +26,15 @@ export default function createGroupChat(props: any) {
   const socket = useSelector((state: RootState) => state.socket.socket);
 
 
-  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
   useEffect(() => {
     const getFriendsList = async () => {
       try {
-        const myFriends = await axios.get(`${url}/user/userFreinds?userId=${userData.id}`, { withCredentials: true });
+        const myFriends = await axios.get(`http://localhost:4000/user/userFreinds?userId=${userData.id}`, { withCredentials: true });
+        console.log("myFriends.data", myFriends.data);
         setFriendsList(myFriends.data)
       }
       catch (error:any) {
+        console.log("Error fetching user data:", error.response.data.message);
       }
     };
 
@@ -52,7 +51,7 @@ export default function createGroupChat(props: any) {
         if (avatar) {
           const formData = new FormData();
           formData.append('file', avatar);
-          const backEndImagePath = await axios.post(`${url}/chat/uploads`, formData, { withCredentials: true });
+          const backEndImagePath = await axios.post(`http://localhost:4000/chat/uploads`, formData, { withCredentials: true });
 
           if ((channelName.trim().length < 4 || channelName.trim().length > 20)) {
             toast.error("Error: Channel name must be between 4 and 20 characters");
@@ -66,8 +65,8 @@ export default function createGroupChat(props: any) {
             owner: userData.id,
             addingToPrivateRoomList
           };
-          const response = await axios.post(`${url}/chat/addToPrivateRoom`, groupChatInfo, { withCredentials: true });
-          socket.emit("joinGroupChat", { userId: userData.id, groupId: response.data.id, token: token });
+          const response = await axios.post('http://localhost:4000/chat/addToPrivateRoom', groupChatInfo, { withCredentials: true });
+          socket.emit("joinGroupChat", { userId: userData.id, groupId: response.data.id });
         }
         else {
           toast.error("Error: You must set the channel picture");
@@ -86,7 +85,7 @@ export default function createGroupChat(props: any) {
         if (avatar) {
           const formData = new FormData();
           formData.append('file', avatar);
-          const backEndImagePath = await axios.post(`${url}/chat/uploads`, formData, { withCredentials: true });
+          const backEndImagePath = await axios.post(`http://localhost:4000/chat/uploads`, formData, { withCredentials: true });
 
           if (!channelName || (channelName.trim().length < 4 || channelName.trim().length > 20)) {
             toast.error("Error: Channel name must be between 4 and 20 characters");
@@ -108,8 +107,8 @@ export default function createGroupChat(props: any) {
             password: channelPassWord,
             owner: userData.id
           };
-          const response = await axios.post(`${url}/chat/createGroup`, groupChatInfo, { withCredentials: true });
-          socket.emit("joinGroupChat", { userId: userData.id, groupId: response.data.id, token: token });
+          const response = await axios.post('http://localhost:4000/chat/createGroup', groupChatInfo, { withCredentials: true });
+          socket.emit("joinGroupChat", { userId: userData.id, groupId: response.data.id });
         }
         else {
           toast.error("Error: You must set the channel picture");
@@ -140,8 +139,12 @@ export default function createGroupChat(props: any) {
   };
 
   const addUserToPrivateRoom = async (userId: string) => {
+    console.log("wach dkhol 111111");
     if (!addingToPrivateRoomList.includes(userId)) {
+      console.log("wach dkhol 2222222");
+      console.log("addingToPrivateRoomList 9bel ", addingToPrivateRoomList);
       setAddingToPrivateRoomList([...addingToPrivateRoomList, userId]);
+      console.log("addingToPrivateRoomList mora ", addingToPrivateRoomList);
     }
   }
 
