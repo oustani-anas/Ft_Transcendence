@@ -22,6 +22,30 @@ export class AuthController {
     private readonly prisma: PrismaService
   ) {}
 
+  // google auth
+  
+  @Get("google")
+  @UseGuards(AuthGuard('google'))
+  async googleAuth(@Req() req) {
+    console.log("inside the giard");
+    // Guard will handle the redirect
+  }
+
+  // Google redirect handler
+  @Get("google/redirect")
+  @UseGuards(AuthGuard('google'))
+  async googleAuthRedirect(@Req() req, @Res() res) {
+    console.log("the user data i get from : ");
+    console.log(req.user);
+    const payload = { sub: req.user.email }; // Or use req.user.id if you save the user in the database
+    const token = await this.jwtService.signAsync(payload);
+
+    res.cookie("JWT_TOKEN", token);
+    return res.redirect(`${process.env.CLIENT_URL}/Profile`);
+  }
+
+  // end of google block auth
+  
   @Get("42")
   @UseGuards(AuthGuard("42"))
   login() {}
@@ -29,7 +53,7 @@ export class AuthController {
   @Get("redirect")
   @UseGuards(AuthGuard("42"))
   async ft_redirect(@Req() req, @Res() res) {
-    console.log("youwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwt awa");
+    //console.log("youwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwt awa");
     const payload = { sub: req.user.id };
     if (req.user.firstLogin) {
       const token = await this.jwtService.signAsync(payload);
@@ -162,18 +186,3 @@ export class AuthController {
     return res.json({ message: "Two-factor authentication is disabled" });
   }
 }
-
-// @Controller("users")
-// export class userController {
-//   constructor(private readonly prismaService: PrismaService) {}
-
-//   @Get(":username")
-//   @UseGuards(AuthGuard("jwt"))
-//   async getUser(@Param("username") username: string) {
-//     const user = await this.prismaService.userExists(username);
-//     return user;
-//   }
-// }
-
-
-
