@@ -1,0 +1,34 @@
+{"data":[
+  {
+    "id": 1,
+    "firstName": "John",
+    "lastName": "Doe",
+    "username": "Johnny",
+    "avatar": "/images/Ace.png"
+  },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "nickname": "Smitty",
+      "image": "/images/logopi.jpeg"
+    },
+    {
+      "id": 3,
+      "name": "Bob Johnson",
+      "nickname": "Bobby",
+      "image":  "/images/logopi.jpeg"
+    },
+    {
+      "id": 3,
+      "name": "Bob Johnson",
+      "nickname": "Bobby",
+      "image":  "/images/logopi.jpeg"
+    },
+    {
+      "id": 3,
+      "name": "Bob Johnson",
+      "nickname": "Bobby",
+      "image":  "/images/logopi.jpeg"
+    }
+  ]
+}

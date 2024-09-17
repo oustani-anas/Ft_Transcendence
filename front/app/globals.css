@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.myfont {
+	font-family: 'Inter', sans-serif;
+}
+
+.limmen{
+	border: solid;
+	border-color: green;
+}
+
+.searchBar::placeholder{
+	font-size: 18px;
+	font-family: 'Courier New', Courier, monospace;
+}
+
+.send::placeholder{
+	color: rgba(46, 46, 46, 0.76);
+	font-size: 18px;
+	font-family: 'Courier New', Courier, monospace;
+}
+
+.font-sans-only {
+	font-family: sans-serif;
+}
+
+
+
+.chatHeight{
+	height: calc(100% - 250px);
+}
+
+.dropZoneOverlay, .FileUpload {
+	width: 100px;
+	height: 100px;
+	border-radius: 100%;
+	border-color: black;
+	border: solid;
+}
+
+.dropZoneOverlay {
+	border: solid;
+	border-color: black;
+
+}
+.FileUpload {
+	border-color: black;
+	border: solid;
+	position: relative;
+	z-index: 1;
+}
+
+.parent{
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+	display: none;
+}
+  
+.no-scrollbar {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+.Parent{
+	display: flex;
+	/* width: 100vw;
+	height: 100vh; */
+	flex-direction: row;
+	align-items: center ;
+	/* align-content: center; */
+  }
+  
+  .leftSide{
+	background-color: rgb(154, 48, 48);
+	height: 100vh;
+	/* width: 30vw; */
+	order: 1;
+  }
+  .formInput{
+	background-color: #6E7AAE;
+	height: 100vh;
+	/* widt h: 70vw; */
+	order: 2;
+	display: grid;
+	grid-column-gap: 20px;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: repeat(8, 1fr);
+	padding-left: 40px;
+	padding-right: 40px;
+  }
+  
+  .fName, .lName, .email, .password, .create{
+	align-self: center;
+  }
+  .form-control{
+	color: #C9C9C9;
+	background-color: #6E7AAE;
+  }
+  label::after {
+	display: none;
+  }
+  
+  
+  .create{
+	grid-column-start: 2;
+	grid-column: span 2;
+  }
+  
+  .form-floating{
+	grid-column: span 1;
+  }
+  
+  .email{
+	grid-column: span 2;
+  }
+  
+  .password{
+	grid-column: span 2;
+  }
+  
+  .btn-submit{
+	width: 100%;
+	background-color: #DFB97F;
+  }
+  
+  footer{
+	position: absolute;
+	text-align: center;
+	bottom: 0;
+	width: 100%;
+  }
+  .submit{
+	align-self: center;
+	width: 100%;
+	grid-column: span 2;
+  }
+  
+  .hlign{
+	grid-column: span 2;
+	align-self: center;
+  }
+  .or {
+	width: 100%; 
+	text-align: center; 
+	border-bottom: 1px solid #000; 
+	line-height: 0.1em;
+  } 
+  
+  .or span { 
+	 background-color: #6E7AAE; 
+	 padding:0 20px; 
+  }
+  
+  .signUp{
+	grid-column: span 2;
+	display: flex;
+	gap: 40px;
+	align-self: center;
+	place-self: center;
+  }
+  
+  .btn-sign{
+	background-color: #6E7AAE;
+	border-color: white;
+  
+  }
+  
+  .swiper {
+	width: 100%;
+	height: 100%;
+  }
+  
+  .swiper-slide {
+	text-align: center;
+	font-size: 18px;
+	background: #fff;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+  }
+  
+  .swiper-slide img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+  }
