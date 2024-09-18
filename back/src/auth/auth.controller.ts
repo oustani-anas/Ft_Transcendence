@@ -32,18 +32,56 @@ export class AuthController {
   }
 
   // Google redirect handler
-  @Get("google/redirect")
+  /*@Get("google/redirect")
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req, @Res() res) {
     console.log("the user data i get from : ");
     console.log(req.user);
     const payload = { sub: req.user.email }; // Or use req.user.id if you save the user in the database
     const token = await this.jwtService.signAsync(payload);
-
+    
     res.cookie("JWT_TOKEN", token);
     return res.redirect(`${process.env.CLIENT_URL}/Profile`);
+    }*/
+   
+   @Get('google/redirect')
+   @UseGuards(AuthGuard('google'))
+   async googleRedirect(@Req() req, @Res() res) {
+     const user = req.user;
+     
+     if (!user.username) {
+       return res.redirect(`${process.env.CLIENT_URL}/set-username`);
+       }
+       
+       // User has a username, proceed with authentication
+  const payload = { sub: req.user.email }; // Or use req.user.id if you save the user in the database
+  const token = await this.jwtService.signAsync({ sub: user.id });
+  res.cookie('JWT_TOKEN', token);
+  return res.redirect(`${process.env.CLIENT_URL}/Profile`);
+}
+
+
+@Post('set-username')
+@UseGuards(AuthGuard('jwt'))
+async setUsername(@Req() req, @Res() res, @Body('username') username: string) {
+  const userId = req.user.id;
+
+  // Check if the username is already taken
+  const existingUser = await this.prisma.user.findUnique({ where: { username } });
+  if (existingUser) {
+    return res.status(400).json({ message: 'Username is already taken' });
   }
 
+  // Update user with the new username
+  await this.prisma.user.update({
+    where: { id: userId },
+    data: { username },
+  });
+
+  return res.json({ message: 'Username set successfully' });
+}
+
+  
   // end of google block auth
   
   @Get("42")

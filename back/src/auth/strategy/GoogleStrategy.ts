@@ -34,17 +34,21 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       // Create an AuthDto object based on the profile info
       const dto: AuthDto = {
         id: id,
-        username: emails[0].value,
         avatar: photos[0].value,
         firstName: name.givenName,
         lastName: name.familyName,
-        twoFactorAuthEnabled: false, // Can be set to false initially, adjust based on your requirements
+        twoFactorAuthEnabled: false,
+        username: null // Can be set to false initially, adjust based on your requirements
       };
 
       // Find or create the user in the database
       const user = await this.authService.findOrCreate(dto);
       if (!user) {
         throw new UnauthorizedException('User not found');
+      }
+
+      if(!user.username) {
+        return done(null, user, {message: 'redirect to set username'});
       }
 
       // Return the user data
