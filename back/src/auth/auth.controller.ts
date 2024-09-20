@@ -1,3 +1,4 @@
+
 import {
   Controller,
   Get,
@@ -64,6 +65,7 @@ export class AuthController {
 @Post('set-username')
 @UseGuards(AuthGuard('jwt'))
 async setUsername(@Req() req, @Res() res, @Body('username') username: string) {
+  console.log("amas n setuserrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
   const userId = req.user.id;
 
   // Check if the username is already taken
