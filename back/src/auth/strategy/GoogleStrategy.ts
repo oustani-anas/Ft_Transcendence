@@ -21,14 +21,20 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   }
 
   async authenticate(request: any, options?: any): Promise<any> {
+    console.log("test inside google strategy");
+    console.log("the request: ", request);
+    console.log("the options : ", options);
     if (request.query && request.query.error === 'access_denied') {
       return request.res.redirect('http://localhost:3000'); // Handle access denial gracefully
     }
+    
+    console.log("test inside google strategy not denied");
     return super.authenticate(request, options);
   }
 
   async validate(accessToken: string, refreshToken: string, profile: any, done: VerifyCallback): Promise<any> {
     try {
+      console.log("inside valdate function ");
       const { id, name, emails, photos } = profile;
 
       // Create an AuthDto object based on the profile info
