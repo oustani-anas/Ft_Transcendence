@@ -5,7 +5,7 @@ import Link from "next/link";
 export default function FirstPage() {
 
 
-  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL ;
   // return (
   //   <div className="w-full h-screen flex flex-col items-center justify-center" style={{backgroundImage: `url(/hh1.jpg)`}}>
   //     <h1 className="text-5xl pb-3 text-white font-bold text-center"> PingPong </h1>
@@ -55,7 +55,7 @@ export default function FirstPage() {
       
       {/* Google OAuth Button */}
       <Link href={`${url}/auth/google`}>
-        <button className="flex items-center bg-zinc-200 px-6 py-3 rounded-lg font-bold gap-3 text-lg">
+        <button className= "flex items-center bg-zinc-200 px-6 py-3 rounded-lg font-bold gap-3 text-lg">
           <img src="/google.svg" alt="Google Logo" className="w-8 h-8" />
           {"Sign in"}
         </button>

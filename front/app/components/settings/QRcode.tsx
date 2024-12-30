@@ -18,7 +18,7 @@ export default function QRcode() {
   const [image, setImage] = useState("");
   const dispatch = useDispatch();
 
-  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL ;
 
   useEffect(() => {
     axios

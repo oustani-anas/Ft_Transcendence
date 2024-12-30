@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 function AuthWrapper({ children }: { children: React.ReactNode }) {
 
-  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL ;
   const frontUrl = process.env.SERVER_FRONTEND || "http://localhost:3000";
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const router = useRouter();

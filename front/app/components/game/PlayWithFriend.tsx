@@ -209,7 +209,7 @@ export const PlayWithFriend = () => {
       setComputer(data.players[1]);
     } 
 
-    const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+    const url = process.env.NEXT_PUBLIC_API_BASE_URL ;
     
     const fetchData = async () => {
       try {

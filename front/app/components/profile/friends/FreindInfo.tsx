@@ -23,7 +23,7 @@ export default function FreindInfo({userId}: {userId: string}) {
   const [refreshStatus, setRefreshStatus] = useState(true);
   const socket = useSelector((state: RootState) => state.socket.socket);
 
-  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL ;
 
   useEffect(() => {
 

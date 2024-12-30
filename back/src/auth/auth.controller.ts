@@ -48,43 +48,23 @@ export class AuthController {
    @Get('google/redirect')
    @UseGuards(AuthGuard('google'))
    async googleRedirect(@Req() req, @Res() res) {
-     const user = req.user;
-     
-     if (!user.username) {
-       return res.redirect(`${process.env.CLIENT_URL}/set-username`);
-       }
-       
-       // User has a username, proceed with authentication
-  const payload = { sub: req.user.email }; // Or use req.user.id if you save the user in the database
-  const token = await this.jwtService.signAsync({ sub: user.id });
-  res.cookie('JWT_TOKEN', token);
-  return res.redirect(`${process.env.CLIENT_URL}/Profile`);
+    const payload = { sub: req.user.id };
+    if (req.user.firstLogin) {
+      const token = await this.jwtService.signAsync(payload);
+      res.cookie("JWT_TOKEN", token);
+      await this.prisma.user.update({
+        where: { id: req.user.id },
+        data: { firstLogin: false },
+      });
+      return res.redirect(`${process.env.CLIENT_URL}/Settings`);
+    } else if (req.user.twoFactorAuthEnabled) {
+      res.cookie("USER_ID", req.user.id);
+      return res.redirect(`${process.env.CLIENT_URL}/QRcode`);
+    }
+    const token = await this.jwtService.signAsync(payload);
+    res.cookie("JWT_TOKEN", token);
+    return res.redirect(`${process.env.CLIENT_URL}/Profile`);
 }
-
-
-@Post('set-username')
-@UseGuards(AuthGuard('jwt'))
-async setUsername(@Req() req, @Res() res, @Body('username') username: string) {
-  console.log("amas n setuserrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
-  const userId = req.user.id;
-
-  // Check if the username is already taken
-  const existingUser = await this.prisma.user.findUnique({ where: { username } });
-  if (existingUser) {
-    return res.status(400).json({ message: 'Username is already taken' });
-  }
-
-  // Update user with the new username
-  await this.prisma.user.update({
-    where: { id: userId },
-    data: { username },
-  });
-
-  return res.json({ message: 'Username set successfully' });
-}
-
-  
-  // end of google block auth
   
   @Get("42")
   @UseGuards(AuthGuard("42"))

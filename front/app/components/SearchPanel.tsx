@@ -21,7 +21,7 @@ export default function SearchPanel() {
   const [myNotification, setMyNotifications] = useState<[]>();
   const [invitToPlay, setInvitToPlay] = useState<[]>();
 
-  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL ;
 
   useEffect(() => {
     const getUsers = async (searchForUser: string) => {

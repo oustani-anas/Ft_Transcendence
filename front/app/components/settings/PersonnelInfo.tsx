@@ -11,6 +11,7 @@ export default function PersonnelInfo() {
   const [isLoading2, setIsLoading2] = useState(false);
   const profileSelector = useSelector(selectProfileInfo);
   const [imagePath, setImagePath] = useState<any>(profileSelector.avatar);
+  const [showNicknameMessage, setShowNicknameMessage] = useState(!profileSelector.username);
   const [firstName, setFirstName] = useState<string>(
     profileSelector.firstName || ""
   );
@@ -30,20 +31,20 @@ export default function PersonnelInfo() {
   useEffect(() => {
     if (
       profileSelector.firstName &&
-      profileSelector.lastName &&
-      profileSelector.username
+      profileSelector.lastName
     ) {
       setImagePath(profileSelector.avatar);
       setFirstName(profileSelector.firstName);
       setLastName(profileSelector.lastName);
       setNickName(profileSelector.username);
+      setShowNicknameMessage(!profileSelector.username);
       setIsLoading2(true);
     }
   }, [profileSelector]);
 
   
 
-  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL ;
 
   const handleAvatarChange = async (e: any) => {
     try {
@@ -196,7 +197,8 @@ export default function PersonnelInfo() {
             </label>
           </div>
         </div>
-        <div className="w-full md:w-[47%] xl:w-[48.5%] relative bg-inherit border-[1px] border-[#c9c9c9] rounded-[10px]">
+        <div className="w-full md:w-[47%] xl:w-[48.5%] relative">
+          <div className="relative bg-inherit border-[1px] border-[#c9c9c9] rounded-[10px]">
           <input
             type="text"
             onChange={(e) => setNickName(e.target.value)}
@@ -214,7 +216,11 @@ export default function PersonnelInfo() {
             }
           >
             Nickname
-          </label>
+            </label>
+          </div>
+            {!profileSelector.username && (
+              <p className="left-2 text-red-500 text-xs mt-1">Please enter a username</p>
+            )}
         </div>
       </div>
       <div className="flex gap-4 flex-col justify-center items-center  sm:flex-row sm:justify-end px-[60px] w-full">
