@@ -68,22 +68,23 @@ export default function PersonnelInfo() {
       console.error(error);
     }
   };
+  
   const onSubmit = async () => {
     try {
       if (!firstName.trim() || !lastName.trim() || !nickName.trim()) {
         toast.error("All fields are required");
         return;
       }
-      else if (nickName.length > 8) {
-        toast.info("Username must be at most 8 characters");
+      else if (nickName.length > 8 || nickName.length < 4) {
+        toast.info("Username must be in 3-8 characters");
         return;
       }
-      else if (firstName.length > 12) {
-        toast.info("firstName must be at most 12 characters");
+      else if (firstName.length > 12 || firstName.length < 4) {
+        toast.info("firstName must be in 3-8 characters");
         return;
       }
-      else if (lastName.length > 12) {
-        toast.info("lastName must be at most 12 characters");
+      else if (lastName.length > 12 || lastName.length < 4) {
+        toast.info("lastName must be in 3-8 characters");
         return;
       }
 
