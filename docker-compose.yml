@@ -16,42 +16,42 @@ services:
     networks:
       - my-network
 
-  # back:
-  #   build:
-  #     context: ./back
-  #     dockerfile: Dockerfile
-  #   container_name: back
-  #   healthcheck:
-  #     test: curl --fail http://localhost:4000/ || exit 1
-  #     interval: 40s
-  #     timeout: 5s
-  #     retries: 5
-  #   restart: always
-  #   ports:
-  #     - "4000:4000"
-  #   env_file:
-  #     - back/.env
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #   networks:
-  #     - my-network
+  back:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: back
+    healthcheck:
+      test: curl --fail http://localhost:4000/ || exit 1
+      interval: 40s
+      timeout: 5s
+      retries: 5
+    restart: always
+    ports:
+      - "4000:4000"
+    env_file:
+      - back/.env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - my-network
 
-  # front:
-  #   build:
-  #     context: ./front
-  #     dockerfile: Dockerfile
-  #   container_name: front
-  #   restart: always
-  #   ports:
-  #     - "3000:3000"    
-  #   env_file:
-  #     - front/.env
-  #   depends_on:
-  #     back:
-  #       condition: service_healthy
-  #   networks:
-  #     - my-network
+  front:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    container_name: front
+    restart: always
+    ports:
+      - "3000:3000"    
+    env_file:
+      - front/.env
+    depends_on:
+      back:
+        condition: service_healthy
+    networks:
+      - my-network
 
 networks:
   my-network:
